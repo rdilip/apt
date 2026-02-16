@@ -1,0 +1,26 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.env
+.DS_Store
+.ipynb_checkpoints/
+
+# Experiment outputs
+wandb/
+logs/
+outputs/
+checkpoints/
+
+# Artifacts (keep tracked checkpoints explicitly)
+*.pt
+*.pth
+*.ckpt
+*.npy
+*.npz
+*.pkl
+*.pickle
+apt/checkpoints/

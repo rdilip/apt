@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "apt"
+version = "0.1.0"
+description = "APT language model and tokenizer"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "kanzi-var authors" }]
+dependencies = [
+    "torch",
+    "numpy",
+    "scipy",
+    "timm",
+    "torchdiffeq",
+    "einops",
+    "jaxtyping",
+    "huggingface_hub",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["apt*"]
+
+[tool.setuptools.package-data]
+apt = ["checkpoints/**/*"]

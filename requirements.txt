@@ -1,0 +1,8 @@
+torch
+numpy
+scipy
+timm
+torchdiffeq
+einops
+jaxtyping
+huggingface_hub
