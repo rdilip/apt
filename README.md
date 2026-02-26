@@ -2,6 +2,12 @@
 
 This repository contains weights and models for our paper Adaptive Protein Tokenization. We introduce a new form of protein structure tokenization, where each token provides global, higher frequency information about a proteins structure. This departs from the existing paradigm where each token represents a local neighborhood in a protein chain.
 
+<details>
+
+<summary><h3>APT gone bananas</h3></summary>
+<img width="1376" height="768" alt="Gemini_Generated_Image_ucikl2ucikl2ucik" src="https://github.com/user-attachments/assets/bba0b6b3-3d19-4dd3-88ee-044cbcecbb10" />
+</details>
+
 <p align="center">
   <strong>
     <a href="https://arxiv.org/abs/2602.06418">arXiv</a> •
