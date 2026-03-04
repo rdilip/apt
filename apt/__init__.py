@@ -13,6 +13,7 @@ from .embeddings import (
     fsq_embedding_from_indices,
     fsq_embedding_from_table,
     fsq_table_from_indices,
+    preprocess_batch,
 )
 from .vector_db import Neighbor, SimpleVectorDB, build_vector_db_from_point_clouds
 
@@ -26,6 +27,7 @@ __all__ = [
     "canonicalize_batch",
     "canonicalize_point_cloud",
     "embed_point_clouds",
+    "preprocess_batch",
     "fsq_table_from_indices",
     "fsq_embedding_from_table",
     "fsq_embedding_from_indices",

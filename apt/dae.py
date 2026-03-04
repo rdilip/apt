@@ -181,6 +181,8 @@ class DAE(nn.Module):
         *,
         ntoks: int = 32,
         canonicalize: bool = True,
+        preprocess: bool = True,
+        preprocess_scale: float = 10.0,
         pad_value: float = 0.0,
         return_indices: bool = False,
     ):
@@ -197,6 +199,8 @@ class DAE(nn.Module):
             x_BLD,
             ntoks=ntoks,
             canonicalize=canonicalize,
+            preprocess=preprocess,
+            preprocess_scale=preprocess_scale,
             pad_value=pad_value,
             return_indices=return_indices,
         )

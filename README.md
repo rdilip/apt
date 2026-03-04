@@ -31,9 +31,10 @@ model = APTLanguageModel.from_pretrained()
 You can now build fixed-size embeddings directly from tokenizer FSQ outputs.
 
 - Embedding recipe:
-  1. Canonicalize coordinates (rotation-invariant orientation).
-  2. Tokenize with FSQ.
-  3. Take first `ntoks` FSQ rows (default `32`) and flatten.
+  1. Automatically preprocess coordinates (mean-center and divide by `10` for Angstrom inputs).
+  2. Canonicalize coordinates (rotation-invariant orientation).
+  3. Tokenize with FSQ.
+  4. Take first `ntoks` FSQ rows (default `32`) and flatten.
 - Embedding dimension = `ntoks * n_levels` (example: `32 * 5 = 160`).
 
 ```python
@@ -42,7 +43,7 @@ from apt import APTTokenizer, SimpleVectorDB
 
 tokenizer = APTTokenizer.from_pretrained().eval()
 
-# x_L3 is a protein point cloud (L, 3), in the same coordinate format as tokenizer inputs.
+# x_L3 can be raw protein coordinates in Angstroms.
 x_L3 = torch.randn(96, 3)
 
 # returns shape (1, ntoks * len(levels))

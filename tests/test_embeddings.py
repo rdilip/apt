@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import torch
 
-from apt.embeddings import canonicalize_point_cloud, embed_point_clouds
+from apt.embeddings import canonicalize_point_cloud, embed_point_clouds, preprocess_batch
 from apt.fsq import FSQ
 from apt.vector_db import SimpleVectorDB, build_vector_db_from_point_clouds
 
@@ -49,9 +49,7 @@ def _load_ca_coords(pdb_path: Path) -> torch.Tensor:
             coords.append([x, y, z])
     if not coords:
         raise ValueError(f"No CA atoms found in {pdb_path}")
-    out = torch.tensor(coords, dtype=torch.float32)
-    out = out - out.mean(dim=0, keepdim=True)
-    return out / 10.0
+    return torch.tensor(coords, dtype=torch.float32)
 
 
 class DummyTokenizer:
@@ -99,6 +97,26 @@ class EmbeddingTests(unittest.TestCase):
         emb_a = self.tokenizer.embed(cloud, ntoks=32, canonicalize=True)
         emb_b = self.tokenizer.embed(rotated, ntoks=32, canonicalize=True)
         self.assertTrue(torch.allclose(emb_a, emb_b, atol=1e-6, rtol=1e-6))
+
+    def test_automatic_preprocess_matches_manual_path(self):
+        cloud = 10.0 * _make_cloud(seed=15, n_points=80) + torch.tensor([3.0, -2.0, 5.0])
+
+        emb_auto = self.tokenizer.embed(
+            cloud,
+            ntoks=32,
+            canonicalize=True,
+            preprocess=True,
+            preprocess_scale=10.0,
+        )
+
+        cloud_manual = preprocess_batch(cloud.unsqueeze(0), scale=10.0).squeeze(0)
+        emb_manual = self.tokenizer.embed(
+            cloud_manual,
+            ntoks=32,
+            canonicalize=True,
+            preprocess=False,
+        )
+        self.assertTrue(torch.allclose(emb_auto, emb_manual, atol=1e-6, rtol=1e-6))
 
     def test_vector_db_returns_same_and_similar_neighbors(self):
         base = _make_cloud(seed=21, n_points=80)

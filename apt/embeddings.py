@@ -62,6 +62,23 @@ def canonicalize_batch(x_BLD: Tensor, eps: float = 1e-8) -> Tensor:
     return torch.stack([canonicalize_point_cloud(x_L3, eps=eps) for x_L3 in x_BLD], dim=0)
 
 
+def preprocess_batch(x_BLD: Tensor, scale: float = 10.0) -> Tensor:
+    """
+    Normalize coordinates to tokenizer input scale.
+
+    By default this assumes Angstrom inputs and converts to nanometers by
+    dividing by 10 after mean-centering each structure.
+    """
+    if x_BLD.ndim != 3 or x_BLD.shape[-1] != 3:
+        raise ValueError(f"Expected shape (B, L, 3), got {tuple(x_BLD.shape)}")
+    if scale <= 0:
+        raise ValueError(f"scale must be > 0, got {scale}")
+
+    x = x_BLD.to(dtype=torch.float32)
+    x = x - x.mean(dim=1, keepdim=True)
+    return x / scale
+
+
 def fsq_table_from_indices(quantizer, idx_BL: Tensor) -> Tensor:
     """
     Convert token ids to FSQ table values per token.
@@ -114,14 +131,17 @@ def embed_point_clouds(
     *,
     ntoks: int = 32,
     canonicalize: bool = True,
+    preprocess: bool = True,
+    preprocess_scale: float = 10.0,
     pad_value: float = 0.0,
     return_indices: bool = False,
 ):
     """
     Embed point clouds by:
-    1) optional canonical rotation,
-    2) tokenization,
-    3) first-ntoks FSQ table flattening.
+    1) optional automatic preprocessing (mean-center + /10),
+    2) optional canonical rotation,
+    3) tokenization,
+    4) first-ntoks FSQ table flattening.
     """
     if x_BLD.ndim == 2:
         x_BLD = x_BLD.unsqueeze(0)
@@ -129,7 +149,8 @@ def embed_point_clouds(
         raise ValueError(f"Expected shape (B, L, 3) or (L, 3), got {tuple(x_BLD.shape)}")
 
     n_tokens_cap = getattr(tokenizer.cfg, "n_tokens", x_BLD.shape[1])
-    x_in = canonicalize_batch(x_BLD) if canonicalize else x_BLD
+    x_in = preprocess_batch(x_BLD, scale=preprocess_scale) if preprocess else x_BLD.to(dtype=torch.float32)
+    x_in = canonicalize_batch(x_in) if canonicalize else x_in
     x_in = x_in.to(device=tokenizer.quantize._basis.device, dtype=torch.float32)
     *_, idx_BL = tokenizer.encode(x_in)
     idx_BL = idx_BL[:, : min(idx_BL.shape[1], n_tokens_cap)]
