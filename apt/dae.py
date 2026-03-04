@@ -175,6 +175,33 @@ class DAE(nn.Module):
         return s_BLD, c_BLD, idx_BL
 
     @torch.no_grad()
+    def embed(
+        self,
+        x_BLD,
+        *,
+        ntoks: int = 32,
+        canonicalize: bool = True,
+        pad_value: float = 0.0,
+        return_indices: bool = False,
+    ):
+        """
+        Build fixed-size embeddings from FSQ table entries.
+
+        The embedding uses the first ``ntoks`` tokens and flattens FSQ table
+        values to shape ``(B, ntoks * n_levels)``.
+        """
+        from .embeddings import embed_point_clouds
+
+        return embed_point_clouds(
+            self,
+            x_BLD,
+            ntoks=ntoks,
+            canonicalize=canonicalize,
+            pad_value=pad_value,
+            return_indices=return_indices,
+        )
+
+    @torch.no_grad()
     def decode_with_cfg_fn(self, idx_BL, cfg_fn=None, true_length=None, n_steps=100, noise_weight=0.1, score_weight=1.0):
 
         if cfg_fn is None:

@@ -6,6 +6,15 @@ from .models import (
     default_language_model_checkpoint,
     default_tokenizer_checkpoint,
 )
+from .embeddings import (
+    canonicalize_batch,
+    canonicalize_point_cloud,
+    embed_point_clouds,
+    fsq_embedding_from_indices,
+    fsq_embedding_from_table,
+    fsq_table_from_indices,
+)
+from .vector_db import Neighbor, SimpleVectorDB, build_vector_db_from_point_clouds
 
 __all__ = [
     "APTLanguageModel",
@@ -14,4 +23,13 @@ __all__ = [
     "default_checkpoints",
     "default_language_model_checkpoint",
     "default_tokenizer_checkpoint",
+    "canonicalize_batch",
+    "canonicalize_point_cloud",
+    "embed_point_clouds",
+    "fsq_table_from_indices",
+    "fsq_embedding_from_table",
+    "fsq_embedding_from_indices",
+    "Neighbor",
+    "SimpleVectorDB",
+    "build_vector_db_from_point_clouds",
 ]

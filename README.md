@@ -27,6 +27,34 @@ model = APTLanguageModel.from_pretrained()
 6. Sample a protein:
    - `python scripts/sample_generate.py`
 
+## Embeddings + Vector Search
+You can now build fixed-size embeddings directly from tokenizer FSQ outputs.
+
+- Embedding recipe:
+  1. Canonicalize coordinates (rotation-invariant orientation).
+  2. Tokenize with FSQ.
+  3. Take first `ntoks` FSQ rows (default `32`) and flatten.
+- Embedding dimension = `ntoks * n_levels` (example: `32 * 5 = 160`).
+
+```python
+import torch
+from apt import APTTokenizer, SimpleVectorDB
+
+tokenizer = APTTokenizer.from_pretrained().eval()
+
+# x_L3 is a protein point cloud (L, 3), in the same coordinate format as tokenizer inputs.
+x_L3 = torch.randn(96, 3)
+
+# returns shape (1, ntoks * len(levels))
+emb = tokenizer.embed(x_L3, ntoks=32, canonicalize=True)
+
+db = SimpleVectorDB(metric="cosine")
+db.add(emb, ids=["protein_a"])
+
+neighbors = db.search(emb, k=1)
+print(neighbors[0][0])
+```
+
 ## Checkpoints
 | Name | Description | Download link |
 | --- | --- | --- |
